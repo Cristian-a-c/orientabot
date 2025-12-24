@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Sistema de Orientación Vocacional</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Agregar el CSS -->
-    <link rel="stylesheet" href="{{ asset('estudiantes/styles_interaction.css') }}">
+    <link rel="stylesheet" href="/estudiantes/css/styles_interaction.css">
 </head>
 <body>
     <!-- Header -->
@@ -109,15 +108,6 @@
         const suggestions = document.getElementById('suggestions');
         let messageCount = 1;
 
-        // Respuestas predefinidas
-        const responses = [
-            'Entiendo tu interés. Para ayudarte mejor, ¿podrías contarme más sobre las materias que más disfrutas en la escuela?',
-            'Esa es una excelente pregunta. Basándome en lo que me cuentas, hay varias carreras que podrían interesarte. ¿Te gustaría explorar opciones en ciencias, humanidades, o tecnología?',
-            'Es importante conocer tus fortalezas. ¿Qué tipo de actividades te hacen sentir más motivado y realizado?',
-            'Hay muchas opciones disponibles en ese campo. ¿Te interesa más el aspecto práctico, la investigación, o el trabajo con personas?',
-            'Considerando tus intereses, te recomendaría explorar carreras en ese ámbito. ¿Qué aspectos específicos te llaman más la atención?'
-        ];
-
         // Auto-resize textarea
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
@@ -147,7 +137,7 @@
             updateSendButton();
         }
 
-        function sendMessage() {
+        async function sendMessage() {
             const text = messageInput.value.trim();
             if (!text) return;
 
@@ -166,12 +156,33 @@
             // Show typing indicator
             showTypingIndicator();
 
-            // Simulate response
-            setTimeout(() => {
+            try {
+                // Enviar mensaje al backend
+                const response = await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        message: text
+                    })
+                });
+
+                const data = await response.json();
+
                 hideTypingIndicator();
-                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                addMessage(randomResponse, 'assistant');
-            }, 1500);
+
+                if (data.success) {
+                    addMessage(data.message, 'assistant');
+                } else {
+                    addMessage('Lo siento, hubo un error al procesar tu mensaje. ' + (data.message || 'Por favor intenta nuevamente.'), 'assistant');
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                console.error('Error:', error);
+                addMessage('Lo siento, no pude conectarme con el servidor. Por favor verifica tu conexión e intenta nuevamente.', 'assistant');
+            }
         }
 
         function addMessage(text, role) {
@@ -192,7 +203,10 @@
 
             const message = document.createElement('div');
             message.className = `message ${role}-message`;
-            message.innerHTML = `<p>${text}</p>`;
+            
+            // Convertir saltos de línea a <br> y preservar formato
+            const formattedText = text.replace(/\n/g, '<br>');
+            message.innerHTML = `<p>${formattedText}</p>`;
 
             if (role === 'assistant') {
                 messageGroup.appendChild(avatar);

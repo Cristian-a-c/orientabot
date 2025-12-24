@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChatController;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/test', function () {
+    return 'Test route works!';
+});
+
+Route::get('/estudiantes', function () {
+    try {
+        if (!view()->exists('estudiantes.interaccion')) {
+            return response('Vista no encontrada. Path: ' . resource_path('views/estudiantes/interaccion.blade.php'), 404);
+        }
+        return view('estudiantes.interaccion');
+    } catch (\Exception $e) {
+        return response('Error: ' . $e->getMessage(), 500);
+    }
+});
+
+// Ruta API para el chat
+Route::post('/api/chat/send', [ChatController::class, 'sendMessage']);
+
