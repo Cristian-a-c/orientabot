@@ -1,0 +1,254 @@
+/* --- Global Styles --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fc;
+    overflow-x: hidden;
+    height: 100vh;
+}
+
+/* --- Navbar --- */
+.custom-navbar {
+    background: linear-gradient(90deg, #4a6cf7 0%, #6f42c1 100%);
+    padding: 10px 20px;
+}
+
+.btn-custom {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white !important;
+    border-radius: 8px;
+    padding: 5px 20px !important;
+    font-weight: 500;
+    margin-right: 5px;
+    border: 1px solid rgba(255,255,255,0.3);
+    transition: all 0.3s;
+}
+
+.btn-custom:hover, .btn-custom.active {
+    background-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+
+.btn-darker {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* --- Main Layout & Background --- */
+.main-container {
+    height: calc(100vh - 70px); /* Restar altura del navbar */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Circular Background Effect (Simulated) */
+.bg-decoration {
+    position: absolute;
+    width: 120vh;
+    height: 120vh;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(111, 66, 193, 0.05) 0%, rgba(111, 66, 193, 0.15) 50%, transparent 70%);
+    top: 50%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
+
+/* --- Typography Left Side --- */
+.badge-title {
+    background: linear-gradient(90deg, #6f42c1 0%, #5a32a3 100%);
+    color: #00ffcc; /* Cyan color */
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+}
+
+.main-title {
+    color: #8e44ad; /* Purple */
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -2px;
+}
+
+.sub-title {
+    color: #9b59b6;
+    font-weight: 700;
+    margin-top: 10px;
+    letter-spacing: 1px;
+}
+
+/* Floating Robot Icon Main */
+.robot-circle-container {
+    position: absolute;
+    top: 10%;
+    left: 45%;
+    z-index: 0;
+}
+
+.robot-circle {
+    width: 200px;
+    height: 200px;
+    background-color: #531dab;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 5rem;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(83, 29, 171, 0.4);
+}
+
+.robot-circle .bubble-icon {
+    position: absolute;
+    bottom: 40px;
+    right: 50px;
+    font-size: 2rem;
+    color: white;
+}
+
+/* --- Chat Interface --- */
+.chat-card {
+    width: 380px;
+    height: 600px;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    overflow: hidden;
+    background-color: #f0f2f5;
+}
+
+.chat-header {
+    background: linear-gradient(135deg, #4a6cf7 0%, #6f42c1 100%);
+    color: white;
+}
+
+.bot-avatar-sm {
+    width: 40px;
+    height: 40px;
+    background: white;
+    color: #6f42c1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.chat-body {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #eef1f7;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Messages */
+.msg-bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.user-msg {
+    background-color: #e4e6eb;
+    color: #050505;
+    border-bottom-right-radius: 2px;
+}
+
+.bot-msg {
+    background-color: #4527a0; /* Deep purple */
+    color: white;
+    border-bottom-left-radius: 2px;
+}
+
+.bot-avatar-xs {
+    width: 30px;
+    height: 30px;
+    background: #6f42c1;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    margin-top: auto;
+}
+
+.user-avatar-xs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.small-time {
+    font-size: 0.7rem;
+    margin-top: -10px;
+}
+
+.msg-actions {
+    color: #6f42c1;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.msg-actions i {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+/* Footer */
+.chat-footer {
+    background: white;
+    border-top: 1px solid #ddd;
+}
+
+.quick-replies .badge {
+    cursor: pointer;
+    font-weight: normal;
+    padding: 8px 10px;
+}
+
+.input-group {
+    background-color: #f0f2f5;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+/* --- Login Modal Styles --- */
+
+/* Input Fields Style */
+.form-floating > .form-control {
+    border: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+}
+
+.form-floating > .form-control:focus {
+    border-color: #6f42c1;
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.15);
+}
+
+.form-floating > label {
+    color: #999;
+}
+
+/* Modal Animation Adjustments */
+.modal-content {
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

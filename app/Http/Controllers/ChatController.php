@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
@@ -31,11 +32,31 @@ class ChatController extends Controller
             }
 
             // Preparar el prompt con contexto de orientación vocacional
-            $systemPrompt = "Eres un asistente virtual especializado en orientación vocacional para estudiantes de secundaria. 
-Tu objetivo es ayudar a los estudiantes a descubrir sus intereses, habilidades y aptitudes para orientarlos hacia carreras universitarias adecuadas.
-Debes ser amable, motivador y hacer preguntas reflexivas que ayuden al estudiante a conocerse mejor.
-Proporciona información sobre diferentes carreras, requisitos, campos laborales y universidades cuando sea relevante.
-Mantén un tono profesional pero cercano, apropiado para estudiantes de secundaria.";
+            $systemPrompt = "Eres un asistente virtual especializado en orientación vocacional para estudiantes de secundaria en Perú.
+
+DIRECTRICES IMPORTANTES:
+1. Cuando te pregunten sobre carreras relacionadas a un área, SIEMPRE proporciona una lista clara y organizada de al menos 8-10 carreras específicas.
+2. Para cada carrera mencionada, incluye una breve descripción (1-2 líneas) de lo que hace el profesional.
+3. Organiza las carreras por categorías cuando sea posible (Ingenierías, Ciencias de la Salud, etc.).
+4. Sé específico con los nombres de las carreras (ej: 'Ingeniería de Sistemas' en vez de solo 'Ingeniería').
+5. Incluye información sobre el campo laboral y perspectivas de cada carrera cuando sea relevante.
+6. Responde de forma completa y estructurada, utilizando listas numeradas o con viñetas.
+7. Mantén un tono motivador y cercano, pero profesional.
+
+FORMATO DE RESPUESTA PARA LISTAS DE CARRERAS:
+Cuando te pregunten sobre carreras de un área, responde así:
+'¡Excelente pregunta! Aquí te presento las principales carreras relacionadas con [área]:
+
+**[Categoría 1]:**
+1. **Nombre de Carrera**: Breve descripción de lo que hace el profesional.
+2. **Otra Carrera**: Descripción concisa.
+
+**[Categoría 2]:**
+1. **Nombre de Carrera**: Descripción.
+
+Después puedes agregar información adicional sobre perspectivas laborales, habilidades necesarias, etc.'
+
+Tu objetivo es ayudar a los estudiantes a descubrir sus intereses y orientarlos hacia carreras universitarias adecuadas.";
 
             // Construir el mensaje para Gemini
             $prompt = $systemPrompt . "\n\nEstudiante: " . $userMessage . "\n\nAsistente:";
@@ -59,7 +80,7 @@ Mantén un tono profesional pero cercano, apropiado para estudiantes de secundar
                             'temperature' => 0.7,
                             'topK' => 40,
                             'topP' => 0.95,
-                            'maxOutputTokens' => 1024,
+                            'maxOutputTokens' => 2048,
                         ],
                         'safetySettings' => [
                             [
@@ -88,6 +109,20 @@ Mantén un tono profesional pero cercano, apropiado para estudiantes de secundar
                 // Extraer el texto de la respuesta
                 if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
                     $assistantMessage = $data['candidates'][0]['content']['parts'][0]['text'];
+                    
+                    // Guardar la conversación en la base de datos
+                    session_start();
+                    if (isset($_SESSION['estudiante_nombre']) && isset($_SESSION['estudiante_dni'])) {
+                        DB::table('conversaciones')->insert([
+                            'estudiante_nombre' => $_SESSION['estudiante_nombre'],
+                            'estudiante_dni' => $_SESSION['estudiante_dni'],
+                            'mensaje_usuario' => $userMessage,
+                            'respuesta_asistente' => $assistantMessage,
+                            'fecha_conversacion' => now(),
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
                     
                     return response()->json([
                         'success' => true,
