@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: orientabot
+    env: docker
+    plan: starter
+    region: oregon
+    branch: main
+
+databases:
+  - name: orientabot-db
+    engine: postgres
+    version: 16
+    plan: starter

@@ -10,20 +10,20 @@ class RolModel extends Model
     protected $primaryKey = 'id_rol';
 
     protected $fillable = [
-        'name_rol',
+        'nombre_rol',
         'id_usuario',
         'admin_id'
     ];
 
-    // 🔵 Relación hacia el usuario
+    //  Relación hacia el usuario
     public function usuario()
     {
         return $this->belongsTo(\App\Models\Usuario\UsuarioModel::class, 'id_usuario');
     }
 
-    // 🔵 Relación hacia el admin
+    //  Relación hacia el admin
     public function admin()
     {
-        return $this->belongsTo(\App\Models\Admin::class, 'admin_id');
+        return $this->belongsTo(\App\Models\Admin\Admin::class, 'admin_id');
     }
 }

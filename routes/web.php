@@ -11,4 +11,8 @@ Route::get('/estudiantes', function () {
     return view('estudiantes.interaccion');
 });
 
+Route::get('/estudiantes/chat', function () {
+    return view('estudiantes.interaccion');
+});
+
 Route::post('/api/chat/send', [ChatController::class, 'sendMessage']);
