@@ -6,6 +6,8 @@ RUN apt-get update && apt-get install -y \
     zip \
     libzip-dev \
     libpng-dev \
+    libjpeg-dev \
+    libfreetype-dev \
     libonig-dev \
     libxml2-dev \
     libpq-dev \
@@ -14,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype \
     && docker-php-ext-install pdo_mysql pdo_pgsql zip intl pcntl bcmath gd \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
