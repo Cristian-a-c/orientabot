@@ -23,13 +23,12 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
+COPY . .
 RUN composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
 
 COPY package.json package-lock.json ./
 RUN npm install
 
-COPY . .
 RUN npm run build
 RUN php artisan key:generate --force
 RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
