@@ -810,6 +810,7 @@
                 // Enviar mensaje al backend
                 const response = await fetch('/api/chat/send', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -819,7 +820,16 @@
                     })
                 });
 
-                const data = await response.json();
+                // Comprobar que el servidor devolvió JSON antes de parsear
+                const contentType = response.headers.get('content-type') || '';
+                let data;
+                if (contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error('Respuesta no JSON del servidor:', text);
+                    data = { success: false, message: 'Respuesta inesperada del servidor.' };
+                }
 
                 hideTypingIndicator();
 

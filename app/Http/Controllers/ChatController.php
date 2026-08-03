@@ -69,6 +69,12 @@ Tu objetivo es que el estudiante entienda con claridad qué opciones reales tien
             $prompt = $systemPrompt . "\n\nEstudiante: " . $userMessage . "\n\nAsistente:";
 
             // Llamar a la API de Gemini
+            Log::info('Preparando llamada a Gemini', [
+                'endpoint' => 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',
+                'apiKeySet' => $apiKey ? true : false,
+                'promptLength' => is_string($prompt) ? strlen($prompt) : null,
+            ]);
+
             $response = Http::timeout(30)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
@@ -109,6 +115,11 @@ Tu objetivo es que el estudiante entienda con claridad qué opciones reales tien
                         ]
                     ]
                 );
+
+            Log::info('Respuesta de Gemini recibida', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -175,9 +186,11 @@ Tu objetivo es que el estudiante entienda con claridad qué opciones reales tien
                 'trace' => $e->getTraceAsString()
             ]);
 
+            $debugMessage = env('APP_DEBUG') ? $e->getMessage() : 'Ocurrió un error al procesar tu mensaje. Por favor intenta nuevamente.';
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ocurrió un error al procesar tu mensaje. Por favor intenta nuevamente.'
+                'message' => $debugMessage
             ], 500);
         }
     }
