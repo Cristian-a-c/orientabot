@@ -8,28 +8,29 @@ use Illuminate\Support\Facades\DB;
 $reporte = null;
 $error = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dni'])) {
-    $dni = $_POST['dni'];
-    
-    // Buscar conversaciones del DNI
-    $conversaciones = DB::table('conversaciones')
-        ->where('estudiante_dni', $dni)
-        ->orderBy('fecha_conversacion', 'desc')
-        ->get();
-    
-    if (count($conversaciones) > 0) {
-        $reporte = [
-            'nombre' => $conversaciones[0]->estudiante_nombre,
-            'dni' => $dni,
-            'conversaciones' => $conversaciones,
-            'total' => count($conversaciones)
-        ];
+try {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dni'])) {
+        $dni = $_POST['dni'];
         
-        // Analizar carreras
-        $carrerasMencionadas = [];
-        foreach ($conversaciones as $conv) {
-            $texto = strtolower($conv->respuesta_asistente);
-            $carreras = [
+        // Buscar conversaciones del DNI
+        $conversaciones = DB::table('conversaciones')
+            ->where('estudiante_dni', $dni)
+            ->orderBy('fecha_conversacion', 'desc')
+            ->get();
+        
+        if (count($conversaciones) > 0) {
+            $reporte = [
+                'nombre' => $conversaciones[0]->estudiante_nombre,
+                'dni' => $dni,
+                'conversaciones' => $conversaciones,
+                'total' => count($conversaciones)
+            ];
+            
+            // Analizar carreras
+            $carrerasMencionadas = [];
+            foreach ($conversaciones as $conv) {
+                $texto = strtolower($conv->respuesta_asistente);
+                $carreras = [
                 'Ingeniería Informática y Sistemas' => ['informátic', 'computación', 'sistemas', 'software', 'programación'],
                 'Ingeniería Civil' => ['civil', 'construcción', 'edificacion', 'infraestructura'],
                 'Ingeniería de Minas' => ['minas', 'minería', 'minero'],

@@ -44,8 +44,13 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/html
 COPY --from=build /var/www/html /var/www/html
 
+# Copy entrypoint and make it executable
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 RUN useradd -m appuser && chown -R appuser:appuser /var/www/html
 USER appuser
 
+ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint.sh"]
 EXPOSE 10000
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]

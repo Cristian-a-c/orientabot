@@ -10,24 +10,103 @@ use Illuminate\Support\Facades\DB;
 
 session_start();
 
-// Verificar que hay datos de sesión
-if (!isset($_SESSION['estudiante_nombre'])) {
-    header('Location: /inicio.php');
-    exit;
+$error = null;
+$nombre = $_SESSION['estudiante_nombre'] ?? null;
+$dni = $_SESSION['estudiante_dni'] ?? null;
+$sesionInicio = $_SESSION['sesion_inicio'] ?? 'No disponible';
+$conversaciones = [];
+$carrerasMencionadas = [];
+$topCarreras = [];
+$afinidadPorArea = [];
+$areaPrincipal = 'Facultad de Ingenierías';
+
+try {
+    // Verificar que hay datos de sesión
+    if (!$nombre) {
+        header('Location: /inicio.php');
+        exit;
+    }
+
+    // Obtener conversaciones del estudiante
+    $conversaciones = DB::table('conversaciones')
+        ->where('estudiante_dni', $dni)
+        ->orderBy('fecha_conversacion', 'desc')
+        ->get();
+
+    // Analizar carreras mencionadas en las conversaciones
+    $carrerasMencionadas = [];
+    foreach ($conversaciones as $conv) {
+        $texto = strtolower($conv->respuesta_asistente);
+
+        // Carreras que dicta actualmente la UNAMBA (sede Abancay)
+        $carreras = [
+            'Ingeniería Informática y Sistemas' => ['informátic', 'computación', 'sistemas', 'software', 'programación'],
+            'Ingeniería Civil' => ['civil', 'construcción', 'edificacion', 'infraestructura'],
+            'Ingeniería de Minas' => ['minas', 'minería', 'minero'],
+            'Ingeniería Agroindustrial' => ['agroindustr'],
+            'Ingeniería en Agroecología y Desarrollo Rural' => ['agroecolog', 'desarrollo rural'],
+            'Administración' => ['administra', 'gestión', 'negocio', 'empresa'],
+            'Educación Inicial Intercultural Bilingüe' => ['educación', 'docente', 'profesor', 'inicial'],
+            'Ciencia Política y Gobernabilidad' => ['política', 'gobernabilidad', 'gestión pública'],
+            'Medicina Veterinaria y Zootecnia' => ['veterinari', 'zootecni']
+        ];
+
+        foreach ($carreras as $carrera => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (strpos($texto, $keyword) !== false) {
+                    if (!isset($carrerasMencionadas[$carrera])) {
+                        $carrerasMencionadas[$carrera] = 0;
+                    }
+                    $carrerasMencionadas[$carrera]++;
+                    break;
+                }
+            }
+        }
+    }
+
+    arsort($carrerasMencionadas);
+    $topCarreras = array_slice($carrerasMencionadas, 0, 5, true);
+
+    $totalConversaciones = count($conversaciones);
+    $compatibilidadGeneral = min(95, max(60, 60 + ($totalConversaciones * 5) + (count($topCarreras) * 3)));
+
+    $areasPorCarrera = [
+        'Facultad de Ingenierías' => ['Ingeniería Informática y Sistemas', 'Ingeniería Civil', 'Ingeniería de Minas', 'Ingeniería Agroindustrial', 'Ingeniería en Agroecología y Desarrollo Rural'],
+        'Facultad de Administración' => ['Administración'],
+        'Facultad de Educación y Ciencias Sociales' => ['Educación Inicial Intercultural Bilingüe', 'Ciencia Política y Gobernabilidad'],
+        'Facultad de Medicina Veterinaria y Zootecnia' => ['Medicina Veterinaria y Zootecnia']
+    ];
+
+    $afinidadPorArea = [];
+    foreach ($areasPorCarrera as $area => $carrerasArea) {
+        $puntaje = 0;
+        foreach ($carrerasArea as $carrera) {
+            if (isset($carrerasMencionadas[$carrera])) {
+                $puntaje += $carrerasMencionadas[$carrera];
+            }
+        }
+        if ($puntaje > 0) {
+            $afinidadPorArea[$area] = $puntaje;
+        }
+    }
+    arsort($afinidadPorArea);
+
+    $areaPrincipal = !empty($afinidadPorArea) ? array_key_first($afinidadPorArea) : 'Facultad de Ingenierías';
+} catch (\Throwable $e) {
+    error_log('Error en reportes.php: ' . $e->getMessage());
+    $error = 'No se pudo cargar el reporte en este momento. Por favor, intenta nuevamente más tarde.';
 }
 
-$nombre = $_SESSION['estudiante_nombre'];
-$dni = $_SESSION['estudiante_dni'];
-$sesionInicio = $_SESSION['sesion_inicio'] ?? 'No disponible';
+$meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+$fechaFormateada = date('d', strtotime($sesionInicio)) . ' de ' . $meses[date('n', strtotime($sesionInicio)) - 1] . ' de ' . date('Y', strtotime($sesionInicio));
 
-// Obtener conversaciones del estudiante
-$conversaciones = DB::table('conversaciones')
-    ->where('estudiante_dni', $dni)
-    ->orderBy('fecha_conversacion', 'desc')
-    ->get();
-
-// Analizar carreras mencionadas en las conversaciones
-$carrerasMencionadas = [];
+$aptitudes = [
+    'Análisis lógico' => 85,
+    'Creatividad' => 75,
+    'Liderazgo' => 65,
+    'Trabajo en equipo' => 80,
+    'Comunicación' => 70
+];
 foreach ($conversaciones as $conv) {
     $texto = strtolower($conv->respuesta_asistente);
     

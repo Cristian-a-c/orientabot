@@ -117,20 +117,35 @@ Tu objetivo es que el estudiante entienda con claridad qué opciones reales tien
                 if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
                     $assistantMessage = $data['candidates'][0]['content']['parts'][0]['text'];
                     
-                    // Guardar la conversación en la base de datos
-                    session_start();
-                    if (isset($_SESSION['estudiante_nombre']) && isset($_SESSION['estudiante_dni'])) {
+                    // Guardar la conversación en la base de datos si hay información de estudiante en sesión
+                    $studentName = session('estudiante_nombre');
+                    $studentDni = session('estudiante_dni');
+
+                    if (!$studentName || !$studentDni) {
+                        if (session_status() !== PHP_SESSION_ACTIVE) {
+                            session_start();
+                        }
+                        $studentName = $_SESSION['estudiante_nombre'] ?? null;
+                        $studentDni = $_SESSION['estudiante_dni'] ?? null;
+                    }
+
+                    if ($studentName && $studentDni) {
                         DB::table('conversaciones')->insert([
-                            'estudiante_nombre' => $_SESSION['estudiante_nombre'],
-                            'estudiante_dni' => $_SESSION['estudiante_dni'],
+                            'estudiante_nombre' => $studentName,
+                            'estudiante_dni' => $studentDni,
                             'mensaje_usuario' => $userMessage,
                             'respuesta_asistente' => $assistantMessage,
                             'fecha_conversacion' => now(),
                             'created_at' => now(),
                             'updated_at' => now(),
                         ]);
+                    } else {
+                        Log::warning('No se encontró información del estudiante en sesión para guardar la conversación.', [
+                            'student_name' => $studentName,
+                            'student_dni' => $studentDni,
+                        ]);
                     }
-                    
+
                     return response()->json([
                         'success' => true,
                         'message' => $assistantMessage
