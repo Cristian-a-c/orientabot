@@ -32,7 +32,7 @@ RUN npm install
 RUN npm run build
 RUN cp .env.example .env
 RUN php artisan key:generate --force
-RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
+RUN php artisan route:cache && php artisan view:cache
 
 FROM php:8.2-cli-bullseye
 
