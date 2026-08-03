@@ -26,13 +26,8 @@ WORKDIR /var/www/html
 COPY . .
 RUN composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
 
-COPY package.json package-lock.json ./
 RUN npm install
-
 RUN npm run build
-RUN cp .env.example .env
-RUN php artisan key:generate --force
-RUN php artisan route:cache && php artisan view:cache
 
 FROM php:8.2-cli-bullseye
 
