@@ -15,4 +15,5 @@ Route::get('/estudiantes/chat', function () {
     return view('estudiantes.interaccion');
 });
 
-Route::post('/api/chat/send', [ChatController::class, 'sendMessage']);
+Route::post('/api/chat/send', [ChatController::class, 'sendMessage'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
