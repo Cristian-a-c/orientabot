@@ -601,19 +601,19 @@
     <div class="help-panel active" id="helpPanel">
         <div class="help-content">
             <div class="help-header">
-                <h2>📚 Guía de Orientación Vocacional</h2>
+                <h2><i class="fa-solid fa-circle-question me-2"></i>Guía de Orientación Vocacional</h2>
                 <button class="close-help-btn" onclick="toggleHelpPanel()">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             
             <div class="help-section">
-                <h3>🎯 ¿Cómo usar el asistente?</h3>
+                <h3><i class="fa-solid fa-circle-info me-2"></i>¿Cómo usar el asistente?</h3>
                 <p>Este asistente está diseñado para ayudarte a descubrir tu vocación profesional a través de una conversación natural. Puedes preguntarle sobre:</p>
             </div>
 
             <div class="help-section">
-                <h3>💡 Temas que puedes consultar</h3>
+                <h3><i class="fa-solid fa-list me-2"></i>Temas que puedes consultar</h3>
                 <ul>
                     <li><strong>Exploración de intereses:</strong> Identifica qué actividades te apasionan</li>
                     <li><strong>Habilidades y aptitudes:</strong> Descubre tus fortalezas naturales</li>
@@ -625,7 +625,7 @@
             </div>
 
             <div class="help-section">
-                <h3>📝 Ejemplos de preguntas</h3>
+                <h3><i class="fa-solid fa-comments me-2"></i>Ejemplos de preguntas</h3>
                 <div class="examples-grid">
                     <div class="example-card" onclick="setSuggestion('¿Qué carreras existen relacionadas con tecnología?')">
                         <strong>Sobre carreras:</strong>
@@ -655,31 +655,31 @@
             </div>
 
             <div class="help-section">
-                <h3>✅ Consejos para mejores resultados</h3>
+                <h3><i class="fa-solid fa-check-circle me-2"></i>Consejos para mejores resultados</h3>
                 <div class="tips-list">
                     <div class="tip-item">
-                        <span class="tip-icon">💬</span>
+                        <span class="tip-icon"><i class="fa-solid fa-pen"></i></span>
                         <div>
                             <strong>Sé específico:</strong>
                             <p>Cuanto más detalles des sobre tus intereses y habilidades, mejores recomendaciones recibirás.</p>
                         </div>
                     </div>
                     <div class="tip-item">
-                        <span class="tip-icon">🔄</span>
+                        <span class="tip-icon"><i class="fa-solid fa-arrows-rotate"></i></span>
                         <div>
                             <strong>Explora diferentes temas:</strong>
                             <p>No te limites a una sola área, pregunta sobre varias opciones para ampliar tu perspectiva.</p>
                         </div>
                     </div>
                     <div class="tip-item">
-                        <span class="tip-icon">📊</span>
+                        <span class="tip-icon"><i class="fa-solid fa-file-lines"></i></span>
                         <div>
                             <strong>Revisa tu reporte:</strong>
                             <p>Al finalizar, consulta tu reporte personalizado con todas las recomendaciones.</p>
                         </div>
                     </div>
                     <div class="tip-item">
-                        <span class="tip-icon">🎓</span>
+                        <span class="tip-icon"><i class="fa-solid fa-user-doctor"></i></span>
                         <div>
                             <strong>Consulta con profesionales:</strong>
                             <p>Este sistema es una herramienta de apoyo. Complementa con asesoría profesional.</p>
@@ -700,7 +700,7 @@
                     <i class="fa-solid fa-robot"></i>
                 </div>
                 <div class="message assistant-message">
-                    <p>¡Hola {{ ucwords(session('estudiante_nombre', 'Estudiante')) }}! 👋 Soy tu asistente de orientación vocacional. Estoy aquí para ayudarte a descubrir tus intereses, habilidades y las carreras que mejor se adaptan a ti. ¿Qué te gustaría saber hoy?</p>
+                    <p>¡Hola {{ ucwords(session('estudiante_nombre', 'Estudiante')) }}! Soy tu asistente de orientación vocacional. Estoy aquí para ayudarte a descubrir tus intereses, habilidades y las carreras que mejor se adaptan a ti. ¿Qué te gustaría saber hoy?</p>
                 </div>
             </div>
         </div>

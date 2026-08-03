@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: orientabot
+    env: php
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      npm install
+      npm run build
+      php artisan key:generate --force
+    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+
+databases:
+  - name: orientabot-db
+    engine: postgres
+    version: 16
+    plan: starter

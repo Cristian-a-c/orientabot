@@ -440,7 +440,7 @@ body {
                     <!-- Cómo usar el asistente -->
                     <div class="mb-4">
                         <h5 class="text-primary fw-bold mb-3">
-                            <i class="fa-solid fa-bullseye me-2"></i>¿Cómo usar el asistente?
+                            <i class="fa-solid fa-circle-question me-2"></i>¿Cómo usar el asistente?
                         </h5>
                         <p class="text-muted">
                             Este asistente está diseñado para ayudarte a descubrir tu vocación profesional a través de una conversación natural. Puedes preguntarle sobre tus intereses, habilidades y las carreras que mejor se adaptan a ti.
@@ -450,7 +450,7 @@ body {
                     <!-- Temas que puedes consultar -->
                     <div class="mb-4">
                         <h5 class="text-primary fw-bold mb-3">
-                            <i class="fa-solid fa-lightbulb me-2"></i>Temas que puedes consultar
+                            <i class="fa-solid fa-list me-2"></i>Temas que puedes consultar
                         </h5>
                         <ul class="list-unstyled">
                             <li class="mb-2">
@@ -483,7 +483,7 @@ body {
                     <!-- Ejemplos de preguntas -->
                     <div class="mb-4">
                         <h5 class="text-primary fw-bold mb-3">
-                            <i class="fa-solid fa-comments me-2"></i>Ejemplos de preguntas
+                            <i class="fa-solid fa-message me-2"></i>Ejemplos de preguntas
                         </h5>
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -540,22 +540,22 @@ body {
                     <!-- Consejos -->
                     <div class="mb-3">
                         <h5 class="text-primary fw-bold mb-3">
-                            <i class="fa-solid fa-star me-2"></i>Consejos para mejores resultados
+                            <i class="fa-solid fa-check-circle me-2"></i>Consejos para mejores resultados
                         </h5>
                         <div class="alert alert-info mb-2">
-                            <strong><i class="fa-solid fa-message me-2"></i>Sé específico:</strong>
+                            <strong><i class="fa-solid fa-pen me-2"></i>Sé específico:</strong>
                             <p class="small mb-0 mt-1">Cuanto más detalles des sobre tus intereses y habilidades, mejores recomendaciones recibirás.</p>
                         </div>
                         <div class="alert alert-warning mb-2">
-                            <strong><i class="fa-solid fa-rotate me-2"></i>Explora diferentes temas:</strong>
+                            <strong><i class="fa-solid fa-arrows-rotate me-2"></i>Explora diferentes temas:</strong>
                             <p class="small mb-0 mt-1">No te limites a una sola área, pregunta sobre varias opciones para ampliar tu perspectiva.</p>
                         </div>
                         <div class="alert alert-success mb-2">
-                            <strong><i class="fa-solid fa-chart-line me-2"></i>Revisa tu reporte:</strong>
+                            <strong><i class="fa-solid fa-file-lines me-2"></i>Revisa tu reporte:</strong>
                             <p class="small mb-0 mt-1">Al finalizar, consulta tu reporte personalizado con todas las recomendaciones.</p>
                         </div>
                         <div class="alert alert-secondary mb-0">
-                            <strong><i class="fa-solid fa-user-tie me-2"></i>Consulta con profesionales:</strong>
+                            <strong><i class="fa-solid fa-user-doctor me-2"></i>Consulta con profesionales:</strong>
                             <p class="small mb-0 mt-1">Este sistema es una herramienta de apoyo. Complementa con asesoría profesional.</p>
                         </div>
                     </div>

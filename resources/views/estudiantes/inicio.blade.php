@@ -107,7 +107,7 @@
 
                     <div class="chat-footer p-2">
                         <div class="quick-replies d-flex gap-2 mb-2">
-                            <a href="{{ url('/estudiantes/chat') }}" class="badge bg-light text-dark border text-decoration-none">👋 Qué es OrientaBot?</a>
+                            <a href="{{ url('/estudiantes/chat') }}" class="badge bg-light text-dark border text-decoration-none"><i class="fa-solid fa-circle-info me-2"></i>Qué es OrientaBot?</a>
                             <a href="{{ url('/estudiantes/chat') }}" class="badge bg-light text-dark border text-decoration-none">💰 Precios</a>
                             <a href="{{ url('/estudiantes/chat') }}" class="badge bg-light text-dark border text-decoration-none">📄 FAQs</a>
                         </div>

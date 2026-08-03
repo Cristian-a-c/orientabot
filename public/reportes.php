@@ -31,17 +31,17 @@ $carrerasMencionadas = [];
 foreach ($conversaciones as $conv) {
     $texto = strtolower($conv->respuesta_asistente);
     
+    // Carreras que dicta actualmente la UNAMBA (sede Abancay)
     $carreras = [
-        'Ingeniería' => ['ingenier', 'ingeniería'],
-        'Medicina' => ['medic', 'doctor', 'salud'],
-        'Derecho' => ['derecho', 'abogado', 'leyes'],
-        'Administración' => ['administra', 'negocio', 'empresa'],
-        'Educación' => ['educación', 'profesor', 'docente'],
-        'Psicología' => ['psicolog', 'psiquiatr'],
-        'Arquitectura' => ['arquitect', 'diseño'],
-        'Contabilidad' => ['contab', 'financ'],
-        'Comunicación' => ['comunicación', 'periodis'],
-        'Informática' => ['informátic', 'computación', 'sistemas', 'software']
+        'Ingeniería Informática y Sistemas' => ['informátic', 'computación', 'sistemas', 'software', 'programación'],
+        'Ingeniería Civil' => ['civil', 'construcción', 'edificacion', 'infraestructura'],
+        'Ingeniería de Minas' => ['minas', 'minería', 'minero'],
+        'Ingeniería Agroindustrial' => ['agroindustr'],
+        'Ingeniería en Agroecología y Desarrollo Rural' => ['agroecolog', 'desarrollo rural'],
+        'Administración' => ['administra', 'gestión', 'negocio', 'empresa'],
+        'Educación Inicial Intercultural Bilingüe' => ['educación', 'docente', 'profesor', 'inicial'],
+        'Ciencia Política y Gobernabilidad' => ['política', 'gobernabilidad', 'gestión pública'],
+        'Medicina Veterinaria y Zootecnia' => ['veterinari', 'zootecni']
     ];
     
     foreach ($carreras as $carrera => $keywords) {
@@ -64,11 +64,10 @@ $totalConversaciones = count($conversaciones);
 $compatibilidadGeneral = min(95, max(60, 60 + ($totalConversaciones * 5) + (count($topCarreras) * 3)));
 
 $areasPorCarrera = [
-    'Tecnología e Ingeniería' => ['Ingeniería', 'Informática'],
-    'Ciencias de la Salud' => ['Medicina', 'Psicología'],
-    'Ciencias Sociales' => ['Derecho', 'Administración', 'Educación', 'Comunicación'],
-    'Arte y Diseño' => ['Arquitectura'],
-    'Ciencias Económicas' => ['Contabilidad']
+    'Facultad de Ingenierías' => ['Ingeniería Informática y Sistemas', 'Ingeniería Civil', 'Ingeniería de Minas', 'Ingeniería Agroindustrial', 'Ingeniería en Agroecología y Desarrollo Rural'],
+    'Facultad de Administración' => ['Administración'],
+    'Facultad de Educación y Ciencias Sociales' => ['Educación Inicial Intercultural Bilingüe', 'Ciencia Política y Gobernabilidad'],
+    'Facultad de Medicina Veterinaria y Zootecnia' => ['Medicina Veterinaria y Zootecnia']
 ];
 
 $afinidadPorArea = [];
@@ -85,7 +84,7 @@ foreach ($areasPorCarrera as $area => $carrerasArea) {
 }
 arsort($afinidadPorArea);
 
-$areaPrincipal = !empty($afinidadPorArea) ? array_key_first($afinidadPorArea) : 'Tecnología e Ingeniería';
+$areaPrincipal = !empty($afinidadPorArea) ? array_key_first($afinidadPorArea) : 'Facultad de Ingenierías';
 
 $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 $fechaFormateada = date('d', strtotime($sesionInicio)) . ' de ' . $meses[date('n', strtotime($sesionInicio)) - 1] . ' de ' . date('Y', strtotime($sesionInicio));
