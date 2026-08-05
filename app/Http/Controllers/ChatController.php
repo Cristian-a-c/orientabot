@@ -21,8 +21,9 @@ class ChatController extends Controller
         $userMessage = $request->input('message');
         
         try {
-            // Obtener API key de Gemini
-            $apiKey = env('GEMINI_API_KEY');
+            // Cargar credenciales desde la configuración de Laravel
+            $apiKey = config('services.gemini.api_key', env('GEMINI_API_KEY'));
+            $model = config('services.gemini.model', env('GEMINI_MODEL', 'gemini-1.5-flash'));
             
             if (!$apiKey) {
                 return response()->json([
@@ -31,7 +32,7 @@ class ChatController extends Controller
                 ], 500);
             }
 
-            // Preparar el prompt con contexto de orientación vocacional ENFOCADO EN LA UNAMBA
+            // Prompt del sistema con contexto enfocado en la UNAMBA
             $systemPrompt = "Eres OrientaBot, el asistente virtual de orientación vocacional de la Universidad Nacional Micaela Bastidas de Apurímac (UNAMBA), en Abancay, Perú.
 
 TU MISIÓN:
@@ -59,104 +60,81 @@ CARRERAS QUE DICTA LA UNAMBA ACTUALMENTE (sede Abancay):
 DIRECTRICES IMPORTANTES:
 1. Cuando el estudiante mencione un interés o habilidad, identifica cuál(es) de estas 9 carreras de la UNAMBA se ajustan mejor, y explica por qué, con una descripción breve del campo laboral.
 2. Si el interés del estudiante no encaja claramente con ninguna de estas 9 carreras (por ejemplo, medicina humana, derecho, psicología), sé honesto: indica que esa carrera específica todavía no se dicta en la UNAMBA, y sugiere la(s) carrera(s) de la UNAMBA más cercana(s) a su interés como alternativa a considerar.
-3. Resalta cuando una carrera tenga relevancia particular para la región Apurímac (ej. Ingeniería de Minas por la actividad minera regional, Ingeniería Agroindustrial y Agroecología por la vocación agropecuaria de la zona).
+3. Resalta cuando una carrera tenga relevancia particular para la región Apurímac.
 4. Responde de forma completa, estructurada, con listas numeradas o viñetas, y un tono motivador pero profesional.
-5. Nunca inventes carreras que la UNAMBA no dicte actualmente.
+5. Nunca inventes carreras que la UNAMBA no dicte actualmente.";
 
-Tu objetivo es que el estudiante entienda con claridad qué opciones reales tiene dentro de la oferta académica de la UNAMBA, y por qué podrían encajar con sus intereses.";
+            // Endpoint dinámico
+            $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
-            // Construir el mensaje para Gemini
-            $prompt = $systemPrompt . "\n\nEstudiante: " . $userMessage . "\n\nAsistente:";
-
-            // Llamar a la API de Gemini
-            Log::info('Preparando llamada a Gemini', [
-                'endpoint' => 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',
-                'apiKeySet' => $apiKey ? true : false,
-                'promptLength' => is_string($prompt) ? strlen($prompt) : null,
-            ]);
-
-            $response = Http::timeout(30)
+            // Petición a Gemini con ignorado de verificación SSL para entorno local
+            $response = Http::withoutVerifying()
+                ->timeout(30)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                 ])
-                ->post(
-                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}",
-                    [
-                        'contents' => [
-                            [
-                                'parts' => [
-                                    ['text' => $prompt]
-                                ]
-                            ]
-                        ],
-                        'generationConfig' => [
-                            'temperature' => 0.7,
-                            'topK' => 40,
-                            'topP' => 0.95,
-                            'maxOutputTokens' => 2048,
-                        ],
-                        'safetySettings' => [
-                            [
-                                'category' => 'HARM_CATEGORY_HARASSMENT',
-                                'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-                            ],
-                            [
-                                'category' => 'HARM_CATEGORY_HATE_SPEECH',
-                                'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-                            ],
-                            [
-                                'category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                                'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-                            ],
-                            [
-                                'category' => 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                                'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                ->post($endpoint, [
+                    'system_instruction' => [
+                        'parts' => [
+                            ['text' => $systemPrompt]
+                        ]
+                    ],
+                    'contents' => [
+                        [
+                            'role' => 'user',
+                            'parts' => [
+                                ['text' => $userMessage]
                             ]
                         ]
+                    ],
+                    'generationConfig' => [
+                        'temperature' => 0.7,
+                        'topK' => 40,
+                        'topP' => 0.95,
+                        'maxOutputTokens' => 2048,
+                    ],
+                    'safetySettings' => [
+                        [
+                            'category' => 'HARM_CATEGORY_HARASSMENT',
+                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                        ],
+                        [
+                            'category' => 'HARM_CATEGORY_HATE_SPEECH',
+                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                        ],
+                        [
+                            'category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                        ],
+                        [
+                            'category' => 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                        ]
                     ]
-                );
-
-            Log::info('Respuesta de Gemini recibida', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
+                ]);
 
             if ($response->successful()) {
                 $data = $response->json();
                 
-                // Extraer el texto de la respuesta
                 if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
                     $assistantMessage = $data['candidates'][0]['content']['parts'][0]['text'];
                     
-                    // Guardar la conversación en la base de datos si hay información de estudiante en sesión
-                    $studentName = session('estudiante_nombre');
-                    $studentDni = session('estudiante_dni');
+                    // Manejo seguro de la sesión con helpers nativos de Laravel
+                    $nombre = session('estudiante_nombre', $_SESSION['estudiante_nombre'] ?? null);
+                    $dni = session('estudiante_dni', $_SESSION['estudiante_dni'] ?? null);
 
-                    if (!$studentName || !$studentDni) {
-                        if (session_status() !== PHP_SESSION_ACTIVE) {
-                            session_start();
-                        }
-                        $studentName = $_SESSION['estudiante_nombre'] ?? null;
-                        $studentDni = $_SESSION['estudiante_dni'] ?? null;
-                    }
-
-                    if ($studentName && $studentDni) {
+                    if ($nombre && $dni) {
                         DB::table('conversaciones')->insert([
-                            'estudiante_nombre' => $studentName,
-                            'estudiante_dni' => $studentDni,
+                            'estudiante_nombre' => $nombre,
+                            'estudiante_dni' => $dni,
                             'mensaje_usuario' => $userMessage,
                             'respuesta_asistente' => $assistantMessage,
                             'fecha_conversacion' => now(),
                             'created_at' => now(),
                             'updated_at' => now(),
                         ]);
-                    } else {
-                        Log::warning('No se encontró información del estudiante en sesión para guardar la conversación.', [
-                            'student_name' => $studentName,
-                            'student_dni' => $studentDni,
-                        ]);
                     }
-
+                    
                     return response()->json([
                         'success' => true,
                         'message' => $assistantMessage
@@ -176,7 +154,7 @@ Tu objetivo es que el estudiante entienda con claridad qué opciones reales tien
                 
                 return response()->json([
                     'success' => false,
-                    'message' => 'Error al conectar con el servicio de IA. Por favor intenta nuevamente.'
+                    'message' => 'Error al conectar con el servicio de IA: ' . $response->status()
                 ], 500);
             }
 
@@ -186,11 +164,9 @@ Tu objetivo es que el estudiante entienda con claridad qué opciones reales tien
                 'trace' => $e->getTraceAsString()
             ]);
 
-            $debugMessage = env('APP_DEBUG') ? $e->getMessage() : 'Ocurrió un error al procesar tu mensaje. Por favor intenta nuevamente.';
-
             return response()->json([
                 'success' => false,
-                'message' => $debugMessage
+                'message' => 'Ocurrió un error al procesar tu mensaje. Por favor intenta nuevamente.'
             ], 500);
         }
     }
