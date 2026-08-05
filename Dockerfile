@@ -31,8 +31,10 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 EXPOSE 10000
 
 # Script de arranque: Ejecuta migraciones, optimiza la caché e inicia el servidor
-CMD php artisan migrate --force && \
+CMD php artisan config:clear && \
     php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
+    php artisan migrate --force && \
     php artisan serve --host=0.0.0.0 --port=10000
+    
